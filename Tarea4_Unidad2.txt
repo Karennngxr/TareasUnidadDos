@@ -1,0 +1,33 @@
+Tarea 4 Unidad 2
+
+Realizar el siguiente ejercicio en Python. 
+Subir el código en una rama llamada tarea4/unidad2
+
+• Objetivo del Ejercicio:
+• Aprender a definir una clase en Python,
+crear un constructor e instanciar obletos.
+
+• Instrucciones:
+
+• Crea una clase llamada Coche.
+
+• Define un constructor que inicialice los
+atributos marca, modelo y año.
+
+• Añade un método a la clase llamado
+mostrar Intormacion que Imprima los
+detalles del coche (marca, modelo y año).
+
+• Crear otro archivo llamado main.py e
+importar la clase del archivo de coche.py y
+Crear al menos Tres ooleros diterentes de
+tipo Coche con distintos valores para
+marca, modelo y año.
+
+• Usa el método mostrar_informacion() para
+mostrar los detalles de cada cocne.
+
+• Extra (opcional): Añadir un método
+calcular_edad_del_coche(año_actual) que
+calcule y devuelva cuántos años tiene el
+coche basandose en el ano actual.
