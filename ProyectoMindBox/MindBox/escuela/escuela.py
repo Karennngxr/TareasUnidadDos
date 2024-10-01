@@ -3,8 +3,9 @@ from grupos.grupo import Grupo
 from estudiantes.estudiante import Estudiante
 from maestros.maestro import Maestro
 from materias.materia import Materia
+from carrera.carrera import Carrera
+from semestre.semestre import Semestre
 import random
-
 
 class Escuela:
     def __init__(self):
@@ -12,6 +13,8 @@ class Escuela:
         self.maestros: List[Maestro] = []
         self.materias: List[Materia] = []
         self.grupos: List[Grupo] = []
+        self.carreras: List[Carrera] = []
+        self.semestres: List[Semestre] = []
 
     def numero_control_est(self) -> str:
         return f"EST{random.randint(1000, 9999)}"
@@ -73,3 +76,25 @@ class Escuela:
             print("Grupos registrados:")
             for grupo in self.grupos:
                 print(f"ID: {grupo.id}, Tipo: {grupo.tipo}")
+                
+    def registrar_carrera(self, carrera: Carrera):
+        self.carreras.append(carrera)
+        print(f"Carrera {carrera.nombre} registrada exitosamente con ID: {carrera.matricula}.")
+    
+    def listar_carreras(self):
+        if not self.carreras:
+            print("No hay carreras registradas.")
+        else:
+            for carrera in self.carreras:
+                print(f"Carrera: {carrera.nombre}, ID: {carrera.matricula}")
+                
+    def registrar_semestre(self, semestre: Semestre):
+        self.semestres.append(semestre)
+        print(f"Semestre {semestre.numero} registrado exitosamente.")
+        
+    def listar_semestres(self):
+        if not self.semestres:
+            print("No hay semestres registrados.")
+        else:
+            for semestre in self.semestres:
+                print(f"Semestre: {semestre.numero}, ID Carrera: {semestre.id_carrera}")
