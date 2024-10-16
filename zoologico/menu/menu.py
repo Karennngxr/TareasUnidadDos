@@ -5,6 +5,8 @@ from guia.guia import Guia
 from veterinario.veterinario import Veterinario
 from mantenimiento.mantenimiento import Mantenimiento
 from administracion.administracion import Administracion
+from animal.animal import Animal
+from visitante.visitante import Visitante
 
 class Menu:
     zoologico: Zoologico = Zoologico()
@@ -22,7 +24,7 @@ class Menu:
             print("---------------------------------------------------------------")
             print("8. Registrar visitante")
             print("9. Mostrar visitantes")
-            print("10. Mostrar visitantes frecuentes")
+            print("10. Mostrar visitantes frecuentes") 
             print("11. Eliminar visitante")
             print("---------------------------------------------------------------")
             print("12. Registrar animal")
@@ -53,9 +55,9 @@ class Menu:
             elif opcion == "8":
                 self.registrar_visitante()
             elif opcion == "9":
-                self.zoologico.mostrar_visitantes()
+                self.zoologico.mostrar_visitante()
             elif opcion == "10":
-                self.zoologico.mostrar_visitantes(frecuentes)
+                self.zoologico.mostrar_visitante_frecuentes()
             elif opcion == "11":
                 self.eliminar_visitante()
             elif opcion == "12":
@@ -67,7 +69,7 @@ class Menu:
             elif opcion == "15":
                 self.registrar_nueva_actividad_empleados()
             elif opcion == "16":
-                self.mostrar__actividades_realizadas_empleados()
+                self.mostrar_actividades_realizadas_empleados()
             elif opcion == "17":
                 print("Hasta luego.")
                 break
@@ -106,6 +108,59 @@ class Menu:
             return
             
         self.zoologico.registrar_empleado(nuevo_empleado)
+    
+    
+   # def __init__(self, zoologico):
+   #     self.zoologico = zoologico
+
+    def ingresar_fecha_llegada(self):
+        
+        fecha_str = input("Fecha de llegada (DD/MM/AAAA): ") #Método auxiliar para ingresar la fecha de llegada del animal
+        return datetime.strptime(fecha_str, "%d/%m/%Y")
+    
+    def registrar_animal(self):
+        print("\nSeleccionaste registrar un animal.")
+    
+        tipo_animal = input("Tipo de animal: ").capitalize()
+        fecha_llegada = self.ingresar_fecha_llegada()  
+        peso = float(input("Peso del animal (kg): "))
+
+        enfermedades = input("Enfermedades (si tiene más de una, sepáralas por comas): ").split(',') 
+        enfermedades = [enfermedad.strip() for enfermedad in enfermedades if enfermedad]  # Limpia espacios
+
+        frecuencia_alimentacion = input("Frecuencia de alimentación: ")
+        tipo_alimentacion = input("Tipo de alimentación: ")
+        vacunas = input("¿Tiene vacunas? (sí/no): ").lower() == "sí"
+
+        numero_control = self.zoologico.generar_numero_control_animal()
+
+        nuevo_animal = Animal(
+            numero_control=numero_control,
+            tipo_animal=tipo_animal,
+            fecha_llegada=fecha_llegada,
+            peso=peso,
+            enfermedades=enfermedades,
+            frecuencia_alimentacion=frecuencia_alimentacion,
+            tipo_alimentacion=tipo_alimentacion,
+            vacunas=vacunas
+        )
+        
+        self.zoologico.registrar_animal(nuevo_animal)
+
+    def mostrar_animales(self):
+        print("\nAnimales registrados:")
+        self.zoologico.mostrar_animales()
+
+    def eliminar_animal(self):
+        print("\nSeleccionaste eliminar un animal.")
+        numero_control = input("Ingresa el número de control del animal a eliminar: ")
+        self.zoologico.eliminar_animal(numero_control)
+
+    def eliminar_visitante(self):
+        print("\nSeleccionaste eliminar un visitante.")
+        numero_control = input("Ingresa el número de control del animal a eliminar: ")
+        self.zoologico.eliminar_animal(numero_control)
+
 
     def eliminar_empleado(self):
         print("\nSeleccionaste eliminar un empleado.")
@@ -117,208 +172,100 @@ class Menu:
         mes = int(input("Mes de nacimiento: "))
         dia = int(input("Día de nacimiento: "))
         return datetime(ano, mes, dia)
+    
+    
+    def registrar_nueva_actividad_empleados(self):
+        
+        print("\nSeleccionaste registrar nueva actividad.")
+
+        empleado = input("Ingresa el nombre del empleado: ")
+        animal_id = input("Ingresa el ID del animal: ")
+        proceso = input("Proceso realizado (Mantenimiento, limpieza, alimentación, etc.): ")
+        fecha = input("Fecha del proceso (DD/MM/AAAA): ")
+        observaciones = input("Observaciones (opcional): ")
+
+    # Aquí se registra la actividad en el zoológico
+        self.zoologico.registrar_actividad(empleado, animal_id, proceso, fecha, observaciones)
+
+    def mostrar_actividades_realizadas_empleados(self):
+        print("\nSeleccionaste mostrar actividades realizadas.")
+        self.zoologico.mostrar_actividades()
+   
+#:)
+    def ingresar_fecha_registro(self):
+        ano = int(input("Año de registro: "))
+        mes = int(input("Mes de registro: "))
+        dia = int(input("Día de registro: "))
+        return datetime(ano, mes, dia)
+
+    def ingresar_fecha_visita(self):
+        ano = int(input("Año de visita: "))
+        mes = int(input("Mes de visita: "))
+        dia = int(input("Día de visita: "))
+        return datetime(ano, mes, dia)
+
+    def elegir_visitante(self):
+        print("\nSeleccionaste visitante previo.")
+        numerodecontrol = input("Ingresa el Numero de control del visitante: ")
+        visita = self.zoologico.buscar_visitante_por_control(numerodecontrol)
+        visita.numero_visitas = visita.numero_visitas + 1
+        return visita
+
+    def registrar_visitante(self):
+        fecha_visita = self.ingresar_fecha_visita()
+        print(fecha_visita)
+        print("\nSeleccionaste registrar un visitante, por favor elige el rfc tu guia: ")
+        self.zoologico.mostrar_empleados(Guia)
+        if not self.zoologico.lista_empleados:
+            return
+
+        guia = input("\n")
+        empleado = self.zoologico.buscar_empleado_por_rfc(guia)
+
+        if empleado:
+            print("Tu guia es: " + empleado.nombre)
+        else:
+            print("No se encontró un guia con ese RFC.")
+            return
+
+        tanda = "1"
+        costo = 0
+        while tanda == "1":
 
 
+            c = input("1. Si es un visitante nuevo o 2. Si es un visitante previo: ")
 
+            if c == "1":
 
+                numero_control = self.zoologico.generar_numero_control_visita()
+                nombre = input("Nombre del visitante: ")
+                apellido = input("Apellido del visitante: ")
+                numero_visitas = 1
+                contrasenia = input("Contraseña: ")
+                fecha_nacimiento = self.ingresar_fecha_nacimiento()
+                fecha_registro = self.ingresar_fecha_registro()
+                edad = "Adulto" if fecha_nacimiento.year <= 2006 else "Niño"
 
+                nuevo_visitante = Visitante(numero_control, nombre, apellido, contrasenia, fecha_nacimiento,
+                                            numero_visitas,
+                                            fecha_registro, edad)
+                self.zoologico.registrar_visitante(nuevo_visitante)
+                costo = (costo + 100) if nuevo_visitante.edad == "Adulto" else (costo + 50)
+                if (nuevo_visitante.numero_visitas % 5) == 0:
+                    costo = (costo - 20) if nuevo_visitante.edad == "Adulto" else (costo - 10)
 
+            elif c == "2":
+                if not self.zoologico.lista_visitantes:
+                    return
+                self.zoologico.mostrar_visitante()
+                visita = self.elegir_visitante()
+                print(
+                    f"Nombre: {visita.nombre}, Visitas: {visita.numero_visitas}, Numero de control: {visita.numero_control}, Edad: {visita.edad}")
+                costo = (costo + 100) if visita.edad == "Adulto" else (costo + 50)
+                if (visita.numero_visitas % 5) == 0:
+                    costo = (costo - 20) if visita.edad == "Adulto" else (costo - 10)
 
+            tanda = input("1. Para seguir agregando miembros a la visita y 2. para terminar: ")
 
-
-
-
-
-
-
-
-
-
-
-
-
-#from zoologico.zoologico import Zoologico
-#from empleado.empleado import Empleado
-#from visitante.visitante import Visitante
-#from animal.animal import Animal
-#from guia.guia import Guia
-#from veterinario.veterinario import Veterinario
-#from mantenimiento.mantenimiento import Mantenimiento
-#from administracion.administracion import Administracion
-#from datetime import datetime
-#from usuario.utils.roles import Rol
-#
-#class Menu:
-#    zoologico: Zoologico = Zoologico()
-#
-#    def login(self):
-#        intentos = 0
-#        while intentos < 5:
-#            print("\n------------ BIENVENIDO AL ZOOLOGICO DE MORELIA ----------")
-#            print("Inicia Sesión para Continuar")
-#
-#            numero_empleado = input("Ingresa tu número de empleado: ")
-#            contrasenia_usuario = input("Ingresa tu contraseña: ")
-#
-#            usuario = self.zoologico.validar_inicio_sesion(numero_empleado=numero_empleado, contrasenia=contrasenia_usuario)
-#            
-#            if usuario is None:
-#                intentos = self.mostrar_intento_sesion_fallido(intentos_usuario=intentos)
-#            else:
-#                if usuario.rol == Rol.GUIA:
-#                    self.mostrar_menu_guia()
-#                    intentos = 0
-#                elif usuario.rol == Rol.VETERINARIO:
-#                    self.mostrar_menu_veterinario()
-#                    intentos = 0
-#                elif usuario.rol == Rol.MANTENIMIENTO:
-#                    self.mostrar_menu_mantenimiento()
-#                    intentos = 0
-#                elif usuario.rol == Rol.ADMINISTRACION:
-#                    self.mostrar_menu_administracion()
-#                    intentos = 0
-#                else:
-#                    print("Rol no identificado. Contacte al administrador.")
-#                    intentos += 1
-#
-#        print("Máximos intentos de inicio de sesión alcanzados. Adiós")
-#
-#    def mostrar_intento_sesion_fallido(self, intentos_usuario):
-#        print("\nUsuario o contraseña incorrectos. Intenta de nuevo")
-#        return intentos_usuario + 1
-#
-#    def mostrar_menu_guia(self):
-#        opcion = 0
-#        while opcion != 3:
-#            print("\n** MENÚ DEL GUÍA **")
-#            print("1. Ver lista de visitas guiadas")
-#            print("2. Ver lista de visitantes")
-#            print("3. Salir")
-#
-#            opcion = int(input("Ingresa una opción: "))
-#
-#            if opcion == 3:
-#                break
-#
-#    def mostrar_menu_veterinario(self):
-#        opcion = 0
-#        while opcion != 4:
-#            print("\n** MENÚ DEL VETERINARIO **")
-#            print("1. Ver lista de animales")
-#            print("2. Registrar nuevo tratamiento")
-#            print("3. Ver historial de tratamientos")
-#            print("4. Agregar enfermedad diagnosticada a un Animal")
-#
-#            print("5. Salir")
-#
-#            opcion = int(input("Ingresa una opción: "))
-#
-#            if opcion == 5:
-#                break
-#
-#    def mostrar_menu_mantenimiento(self):
-#        opcion = 0
-#        while opcion != 3:
-#            print("\n** MENÚ DE MANTENIMIENTO **")
-#            print("1. Ver lista de tareas de mantenimiento")
-#            print("2. Registrar nueva tarea")
-#            print("3. Salir")
-#
-#            opcion = int(input("Ingresa una opción: "))
-#
-#            if opcion == 3:
-#                break
-#
-#    def mostrar_menu_administracion(self):
-#        while True:
-#            print("\n** MENÚ DE ADMINISTRACIÓN **")
-#            print("1. Registrar empleado")
-#            print("2. Registrar visitante")
-#            print("3. Registrar animal")
-#            print("4. Mostrar empleados")
-#            print("5. Mostrar visitantes")
-#            print("6. Mostrar animales")
-#            print("7. Eliminar empleado")
-#            print("8. Eliminar visitante")
-#            print("9. Eliminar animal")
-#            print("10. Salir")
-#
-#            opcion = input("Ingresa una opción para continuar: ")
-#
-#            if opcion == "1":
-#                print("\nSeleccionaste la opción para registrar un empleado")
-#
-#                numero_empleado = self.zoologico.generar_numero_empleado()
-#                nombre = input("Ingresa el nombre del empleado: ")
-#                apellido = input("Ingresa el apellido del empleado: ")
-#                rol = input("Ingresa el rol del empleado (Guía, Veterinario, Mantenimiento, Administración): ")
-#                contrasenia = input("Ingresa la contraseña del empleado: ")
-#
-#                empleado = Empleado(
-#                    numero_empleado=numero_empleado,
-#                    nombre=nombre, 
-#                    apellido=apellido,
-#                    rol=rol,
-#                    contrasenia=contrasenia
-#                )
-#                self.zoologico.registrar_empleado(empleado)
-#
-#                print("\nEmpleado registrado correctamente")
-#
-#            elif opcion == "2":
-#                print("\nSeleccionaste la opción para registrar un visitante")
-#
-#                nombre_visitante = input("Ingresa el nombre del visitante: ")
-#                apellido_visitante = input("Ingresa el apellido del visitante: ")
-#                edad_visitante = int(input("Ingresa la edad del visitante: "))
-#                tipo_visita = input("Ingresa el tipo de visita (General/Guiada): ")
-#
-#                visitante = Visitante(nombre=nombre_visitante, apellido=apellido_visitante, edad=edad_visitante, tipo_visita=tipo_visita)
-#                self.zoologico.registrar_visitante(visitante)
-#
-#                print("\nVisitante registrado correctamente")
-#
-#            elif opcion == "3":
-#                print("\nSeleccionaste la opción para registrar un nuevo animal")
-#
-#                nombre_animal = input("Ingresa el nombre del animal: ")
-#                especie_animal = input("Ingresa la especie del animal: ")
-#                edad_animal = int(input("Ingresa la edad del animal: "))
-#                habitat_animal = input("Ingresa el hábitat del animal: ")
-#
-#                animal = Animal(nombre=nombre_animal, especie=especie_animal, edad=edad_animal, habitat=habitat_animal)
-#                self.zoologico.registrar_animal(animal)
-#
-#                print("\nAnimal registrado con éxito")
-#
-#            elif opcion == "4":
-#                self.zoologico.mostrar_empleados()
-#
-#            elif opcion == "5":
-#                self.zoologico.mostrar_visitantes()
-#
-#            elif opcion == "6":
-#                self.zoologico.mostrar_animales()
-#
-#            elif opcion == "7":
-#                print("\nSeleccionaste la opción para eliminar un empleado")
-#
-#                numero_empleado = input("Ingresa el número de empleado: ")
-#                self.zoologico.eliminar_empleado(numero_empleado=numero_empleado)
-#
-#            elif opcion == "8":
-#                print("\nSeleccionaste la opción para eliminar un visitante")
-#
-#                id_visitante = input("Ingresa el ID del visitante: ")
-#                self.zoologico.eliminar_visitante(id_visitante=id_visitante)
-#
-#            elif opcion == "9":
-#                print("\nSeleccionaste la opción para eliminar un animal")
-#
-#                id_animal = input("Ingresa el ID del animal: ")
-#                self.zoologico.eliminar_animal(id_animal=id_animal)
-#
-#            elif opcion == "10":
-#                print("\nHasta luego")
-#                break
-#
+        print("Costo total del grupo: ", costo, " Guia que los acompañara: ", empleado.nombre)
+        

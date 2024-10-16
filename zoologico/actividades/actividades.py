@@ -1,15 +1,11 @@
-from persona.utils.roles import Rol  
-#from datetime import datetime
+class Actividad:
+    def __init__(self, empleado, animal_id, proceso, fecha, observaciones=None):
+        self.empleado = empleado
+        self.animal_id = animal_id
+        self.proceso = proceso
+        self.fecha = fecha
+        self.observaciones = observaciones
 
-class Actividades:
-    def __init__(self, numero_control, nombre, apellido, rfc, sueldo, contrasenia, anios_antiguedad, horario, fecha_nacimiento, idioma):
-        super().__init__(numero_control, nombre, apellido, rfc, sueldo, contrasenia, anios_antiguedad, horario, fecha_nacimiento)
-        self.idioma = idioma
-        self.rol = Rol.GUIA 
-
-
-#Empleado que encargada (debe ser un empleado con el rol de mantenimiento)
-#ID del animal
-#Proceso que se realizó (Mantenimiento, limpieza, alimentación, etc)
-#Fecha del proceso
-#Observaciones (opcional)
+    def __str__(self):
+        observaciones_str = f" | Observaciones: {self.observaciones}" if self.observaciones else ""
+        return f"Empleado: {self.empleado} | ID Animal: {self.animal_id} | Proceso: {self.proceso} | Fecha: {self.fecha}{observaciones_str}"
